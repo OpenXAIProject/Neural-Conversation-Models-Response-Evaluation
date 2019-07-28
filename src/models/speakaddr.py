@@ -18,7 +18,8 @@ class SpeakAddr(nn.Module):
                                            config.dropout, config.word_drop, config.max_unroll, config.sample,
                                            config.temperature, config.beam_size)
 
-        self.context2decoder = layers.FeedForward(config.encoder_hidden_size,
+        context_input_size = (config.num_layers * config.encoder_hidden_size * self.encoder.num_directions)
+        self.context2decoder = layers.FeedForward(context_input_size,
                                                   config.num_layers * config.decoder_hidden_size,
                                                   num_layers=1,
                                                   activation=config.activation)
