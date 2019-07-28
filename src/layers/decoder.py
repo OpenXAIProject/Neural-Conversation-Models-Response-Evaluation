@@ -177,7 +177,7 @@ class DecoderSARNN(BaseRNNDecoder):
     def forward_step(self, x, user1_embed, user2_embed, h, encoder_outputs=None, input_valid_length=None):
         x = self.embed(x)
         hy, cy = self.rnncell(x, user1_embed, user2_embed, h)
-        last_h = (hy, cy)
+        last_h = hy
         out = self.out(last_h)
 
         return out, last_h
