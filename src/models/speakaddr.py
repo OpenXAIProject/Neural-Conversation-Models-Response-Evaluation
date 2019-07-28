@@ -30,24 +30,15 @@ class SpeakAddr(nn.Module):
     def forward(self, input_utterances, conv_users, input_utterance_length, input_conversation_length,
                 target_utterances, decode=False):
         num_utterances = input_utterances.size(0)
-        max_conv_len = input_conversation_length.data.max().item()
 
         _, encoder_hidden = self.encoder(input_utterances, input_utterance_length)
-        start = torch.cumsum(torch.cat((to_var(input_conversation_length.data.new(1).zero_()),
-                                        input_conversation_length[:-1])), 0)
         encoder_hidden_h, encoder_hidden_c = encoder_hidden
 
         encoder_hidden_h = encoder_hidden_h.transpose(1, 0).contiguous().view(num_utterances, -1)
-        encoder_hidden_h = torch.stack([pad(encoder_hidden_h.narrow(0, s, l), max_conv_len)
-                                        for s, l in zip(start.data.tolist(),
-                                                        input_conversation_length.data.tolist())], 0)
         decoder_init_h = self.context2decoder_h(encoder_hidden_h)
         decoder_init_h = decoder_init_h.view(-1, self.decoder.hidden_size)
 
         encoder_hidden_c = encoder_hidden_c.transpose(1, 0).contiguous().view(num_utterances, -1)
-        encoder_hidden_c = torch.stack([pad(encoder_hidden_c.narrow(0, s, l), max_conv_len)
-                                        for s, l in zip(start.data.tolist(),
-                                                        input_conversation_length.data.tolist())], 0)
         decoder_init_c = self.context2decoder_c(encoder_hidden_c)
         decoder_init_c = decoder_init_c.view(-1, self.decoder.hidden_size)
 
