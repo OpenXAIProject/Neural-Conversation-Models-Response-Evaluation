@@ -70,16 +70,16 @@ class ConvUserDataset(ConvDataset):
         return utterances, conversation_length, utterance_length, conversation_users
 
 
-def get_loader(convs, convs_length, utterances_length, vocab, convs_users=False, batch_size=100, shuffle=True):
+def get_loader(convs, convs_length, utterances_length, vocab, convs_users=None, batch_size=100, shuffle=True):
     def collate_fn(data):
         # Sort by conversation length (descending order) to use 'pack_padded_sequence'
         data.sort(key=lambda x: x[1], reverse=True)
         return zip(*data)
 
-    if convs_users:
-        dataset = ConvUserDataset(convs, convs_users, convs_length, utterances_length, vocab)
-    else:
+    if convs_users is None:
         dataset = ConvDataset(convs, convs_length, utterances_length, vocab)
+    else:
+        dataset = ConvUserDataset(convs, convs_users, convs_length, utterances_length, vocab)
 
     data_loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=shuffle, collate_fn=collate_fn)
 
