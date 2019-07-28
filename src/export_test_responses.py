@@ -19,7 +19,7 @@ def main():
 
     config.vocab_size = vocab.vocab_size
 
-    data_loader = get_data_loader(config, vocab)
+    data_loader = get_data_loader(config, vocab, convs_users=config.users)
     model_solver = getattr(solvers, "Solver{}".format(config.model))
     test_solver = model_solver(config, None, data_loader, vocab=vocab, is_train=False)
 

@@ -108,6 +108,7 @@ def get_config(parse=True, **optional_kwargs):
     parser.add_argument('--context_size', type=int, default=1000)
     parser.add_argument('--feedforward', type=str, default='FeedForward')
     parser.add_argument('--activation', type=str, default='Tanh')
+    parser.add_argument('--users', type=str2bool, default=False)
 
     parser.add_argument('--z_sent_size', type=int, default=100)
     parser.add_argument('--z_conv_size', type=int, default=100)

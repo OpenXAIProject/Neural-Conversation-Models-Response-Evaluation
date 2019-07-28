@@ -21,13 +21,13 @@ if __name__ == '__main__':
     train_data_loader = get_loader(convs=load_pickle(config.convs_path),
                                    convs_length=load_pickle(config.conversations_length_path),
                                    utterances_length=load_pickle(config.utterances_length_path),
-                                   vocab=vocab,
+                                   vocab=vocab, convs_users=config.users,
                                    batch_size=config.batch_size)
 
     eval_data_loader = get_loader(convs=load_pickle(val_config.convs_path),
                                   convs_length=load_pickle(val_config.conversations_length_path),
                                   utterances_length=load_pickle(val_config.utterances_length_path),
-                                  vocab=vocab, shuffle=False,
+                                  vocab=vocab, shuffle=False, convs_users=config.users,
                                   batch_size=val_config.eval_batch_size)
 
     model_solver = getattr(solvers, "Solver{}".format(config.model))

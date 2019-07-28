@@ -41,18 +41,18 @@ class SpeakAddr(nn.Module):
 
             return prediction
 
-    def generate(self, context, context_users, sentence_length, n_context):
+    def generate(self, context, conv_users, sentence_length, n_context):
         samples = []
         all_samples = list()
 
         context_outputs = None
         for i in range(n_context):
-            context_outputs, encoder_hidden = self.encoder(context[:, i, :], context_users, sentence_length[:, i])
+            context_outputs, encoder_hidden = self.encoder(context[:, i, :], sentence_length[:, i])
 
         decoder_init = self.context2decoder(context_outputs)
         decoder_init = decoder_init.view(self.decoder.num_layers, -1, self.decoder.hidden_size)
 
-        prediction_all, final_score, length = self.decoder.beam_decode(init_h=decoder_init)
+        prediction_all, final_score, length = self.decoder.beam_decode(init_h=decoder_init, user_inputs=conv_users)
         all_samples.append(prediction_all)
         prediction = prediction_all[:, 0, :]
         samples.append(prediction)
