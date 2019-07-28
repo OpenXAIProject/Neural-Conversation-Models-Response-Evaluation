@@ -10,7 +10,8 @@ class HRED(nn.Module):
 
         self.config = config
         self.encoder = layers.EncoderRNN(config.vocab_size, config.embedding_size, config.encoder_hidden_size,
-                                         config.rnn, config.num_layers, config.bidirectional, config.dropout)
+                                         config.rnn, config.num_layers, config.bidirectional, config.dropout,
+                                         pretrained_wv_path=config.pretrained_wv_path)
 
         context_input_size = (config.num_layers * config.encoder_hidden_size * self.encoder.num_directions)
         self.context_encoder = layers.ContextRNN(context_input_size, config.context_size, config.rnn,
