@@ -12,9 +12,10 @@ class SpeakAddr(nn.Module):
                                          config.rnn, config.num_layers, config.bidirectional, config.dropout,
                                          pretrained_wv_path=config.pretrained_wv_path)
 
-        self.decoder = layers.DecoderSARNN(config.vocab_size, config.embedding_size, config.decoder_hidden_size,
-                                           config.rnncell, config.num_layers, config.dropout, config.word_drop,
-                                           config.max_unroll, config.sample, config.temperature, config.beam_size)
+        self.decoder = layers.DecoderSARNN(config.vocab_size, config.user_size, config.embedding_size,
+                                           config.decoder_hidden_size, config.rnncell, config.num_layers,
+                                           config.dropout, config.word_drop, config.max_unroll, config.sample,
+                                           config.temperature, config.beam_size)
 
         self.context2decoder = layers.FeedForward(config.encoder_hidden_size,
                                                   config.num_layers * config.decoder_hidden_size,
