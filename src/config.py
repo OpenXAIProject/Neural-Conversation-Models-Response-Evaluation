@@ -118,6 +118,7 @@ def get_config(parse=True, **optional_kwargs):
     parser.add_argument('--kl_annealing_iter', type=int, default=250000)
     parser.add_argument('--importance_sample', type=int, default=100)
     parser.add_argument('--sentence_drop', type=float, default=0.25)
+    parser.add_argument('--patience', type=int, default=5)
 
     parser.add_argument('--n_context', type=int, default=1)
     parser.add_argument('--n_sample_step', type=int, default=1)

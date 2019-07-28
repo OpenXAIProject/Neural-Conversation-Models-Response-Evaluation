@@ -9,6 +9,7 @@ from tqdm import tqdm
 from math import isnan
 import re
 import codecs
+import sys
 
 
 class Solver(object):
@@ -90,6 +91,9 @@ class Solver(object):
 
     def train(self):
         epoch_loss_history = list()
+        min_validation_loss = sys.float_info.max
+        patience_cnt = self.config.patience
+
         for epoch_i in range(self.epoch_i, self.config.n_epoch):
             self.epoch_i = epoch_i
             batch_loss_history = list()
@@ -150,6 +154,16 @@ class Solver(object):
 
             if epoch_i % self.config.plot_every_epoch == 0:
                 self.write_summary(epoch_i)
+
+            if min_validation_loss > self.validation_loss:
+                min_validation_loss = self.validation_loss
+            else:
+                patience_cnt -= 1
+
+            if patience_cnt < 0:
+                print(f'\nEarly stop at {epoch_i}')
+                self.save_model(epoch_i)
+                return epoch_loss_history
 
         self.save_model(self.config.n_epoch)
 
