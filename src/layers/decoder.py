@@ -57,7 +57,7 @@ class BaseRNNDecoder(nn.Module):
     def beam_decode(self, init_h=None, encoder_outputs=None, input_valid_length=None, decode=False):
         batch_size = self.batch_size(h=init_h)
 
-        x = self.init_token(batch_size * self.beam_size, SOS_ID)
+        x = self.init_token(batch_size * self.beam_size)
 
         h = self.init_h(batch_size, hidden=init_h).repeat(1, self.beam_size, 1)
 
@@ -129,7 +129,7 @@ class DecoderRNN(BaseRNNDecoder):
     def forward(self, inputs, init_h=None, encoder_outputs=None, input_valid_length=None, decode=False):
         batch_size = self.batch_size(inputs, init_h)
 
-        x = self.init_token(batch_size, SOS_ID)
+        x = self.init_token(batch_size)
 
         h = init_h
 
