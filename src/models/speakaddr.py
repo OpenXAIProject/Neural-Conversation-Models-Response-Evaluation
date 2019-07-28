@@ -8,8 +8,9 @@ class SpeakAddr(nn.Module):
         super(SpeakAddr, self).__init__()
 
         self.config = config
-        self.encoder = layers.EncoderRNN(config.vocab_size, config.user_size, config.embedding_size,
-                                         config.encoder_hidden_size, config.pretrained_wv_path)
+        self.encoder = layers.EncoderRNN(config.vocab_size, config.embedding_size, config.encoder_hidden_size,
+                                         config.rnn, config.num_layers, config.bidirectional, config.dropout,
+                                         pretrained_wv_path=config.pretrained_wv_path)
 
         self.decoder = layers.DecoderSARNN(config.vocab_size, config.embedding_size, config.decoder_hidden_size,
                                            config.rnncell, config.num_layers, config.dropout, config.word_drop,
