@@ -152,7 +152,7 @@ class DecoderRNN(BaseRNNDecoder):
 
 
 class DecoderSARNN(BaseRNNDecoder):
-    def __init__(self, vocab_size, user_size, embedding_size, hidden_size, rnncell=LSTMSACell, num_layers=1,
+    def __init__(self, vocab_size, user_size, embedding_size, hidden_size, num_layers=1,
                  dropout=0.0, word_drop=0.0, max_unroll=30, sample=True, temperature=1.0, beam_size=1):
         super(DecoderSARNN, self).__init__()
 
@@ -170,7 +170,7 @@ class DecoderSARNN(BaseRNNDecoder):
         self.embedding = nn.Embedding(vocab_size, embedding_size)
         self.user_embedding = nn.Embedding(user_size, embedding_size)
 
-        self.rnncell = rnncell(embedding_size, hidden_size)
+        self.rnncell = LSTMSACell(embedding_size, hidden_size)
         self.out = nn.Linear(hidden_size, vocab_size)
         self.softmax = nn.Softmax(dim=1)
 
