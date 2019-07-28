@@ -85,6 +85,7 @@ class SolverHRED(Solver):
                 min_validation_loss = self.validation_loss
             else:
                 patience_cnt -= 1
+                self.save_model(epoch_i)
 
             if patience_cnt < 0:
                 print(f'\nEarly stop at {epoch_i}')
