@@ -1,2 +1,2 @@
 from .hred import *
-from .solver import *
+from .speakaddr import *

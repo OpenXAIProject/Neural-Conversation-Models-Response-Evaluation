@@ -2,7 +2,7 @@ import random
 import torch
 from torch import nn
 from torch.nn import functional as F
-from .rnncells import StackedGRUCell
+from .rnncells import StackedGRUCell, LSTMSACell
 from .beam_search import Beam
 from utils import to_var, SOS_ID, UNK_ID, EOS_ID
 
@@ -25,7 +25,6 @@ class BaseRNNDecoder(nn.Module):
         if inputs is not None:
             batch_size = inputs.size(0)
             return batch_size
-
         else:
             batch_size = h.size(1)
             return batch_size
@@ -119,9 +118,7 @@ class DecoderRNN(BaseRNNDecoder):
 
     def forward_step(self, x, h, encoder_outputs=None, input_valid_length=None):
         x = self.embed(x)
-
         last_h, h = self.rnncell(x, h)
-
         out = self.out(last_h)
 
         return out, h
@@ -146,10 +143,110 @@ class DecoderRNN(BaseRNNDecoder):
         else:
             x_list = []
             for i in range(self.max_unroll):
-
                 out, h = self.forward_step(x, h)
 
                 x = self.decode(out)
                 x_list.append(x)
 
             return torch.stack(x_list, dim=1)
+
+
+class DecoderSARNN(BaseRNNDecoder):
+    def __init__(self, vocab_size, user_size, embedding_size, hidden_size, rnncell=LSTMSACell, num_layers=1,
+                 dropout=0.0, word_drop=0.0, max_unroll=30, sample=True, temperature=1.0, beam_size=1):
+        super(DecoderSARNN, self).__init__()
+
+        self.vocab_size = vocab_size
+        self.embedding_size = embedding_size
+        self.hidden_size = hidden_size
+        self.num_layers = num_layers
+        self.dropout = dropout
+        self.temperature = temperature
+        self.word_drop = word_drop
+        self.max_unroll = max_unroll
+        self.sample = sample
+        self.beam_size = beam_size
+
+        self.embedding = nn.Embedding(vocab_size, embedding_size)
+        self.user_embedding = nn.Embedding(user_size, embedding_size)
+
+        self.rnncell = rnncell(embedding_size, hidden_size)
+        self.out = nn.Linear(hidden_size, vocab_size)
+        self.softmax = nn.Softmax(dim=1)
+
+    def forward_step(self, x, user1_embed, user2_embed, h, encoder_outputs=None, input_valid_length=None):
+        x = self.embed(x)
+        hy, cy = self.rnncell(x, user1_embed, user2_embed, h)
+        last_h = (hy, cy)
+        out = self.out(last_h)
+
+        return out, last_h
+
+    def forward(self, word_inputs, user_inputs, init_h=None, encoder_outputs=None, input_valid_length=None, decode=False):
+        batch_size = self.batch_size(word_inputs, init_h)
+        user_embedded = self.user_embedding(user_inputs)
+
+        x = self.init_token(batch_size)
+        h = init_h
+
+        if not decode:
+            out_list = []
+            seq_len = word_inputs.size(1)
+            for i in range(seq_len):
+                out, h = self.forward_step(x, user_embedded[:, 0, :], user_embedded[:, 1, :], h)
+
+                out_list.append(out)
+                x = word_inputs[:, i]
+
+            return torch.stack(out_list, dim=1)
+        else:
+            x_list = []
+            for i in range(self.max_unroll):
+                out, h = self.forward_step(x, user_embedded[:, 0, :], user_embedded[:, 1, :], h)
+
+                x = self.decode(out)
+                x_list.append(x)
+
+            return torch.stack(x_list, dim=1)
+
+    def beam_decode(self, init_h=None, user_inputs=None, encoder_outputs=None, input_valid_length=None, decode=False):
+        batch_size = self.batch_size(h=init_h)
+        user_embedded = self.user_embedding(user_inputs)
+
+        x = self.init_token(batch_size * self.beam_size)
+
+        h = self.init_h(batch_size, hidden=init_h).repeat(1, self.beam_size, 1)
+
+        batch_position = to_var(torch.arange(0, batch_size).long() * self.beam_size)
+
+        score = torch.ones(batch_size * self.beam_size) * -float('inf')
+        score.index_fill_(0, torch.arange(0, batch_size).long() * self.beam_size, 0.0)
+        score = to_var(score)
+
+        beam = Beam(batch_size, self.hidden_size, self.vocab_size, self.beam_size, self.max_unroll, batch_position)
+
+        for i in range(self.max_unroll):
+            out, h = self.forward_step(x, user_embedded[:, 0, :], user_embedded[:, 1, :], h,
+                                       encoder_outputs=encoder_outputs, input_valid_length=input_valid_length)
+            log_prob = F.log_softmax(out, dim=1)
+
+            score = score.view(-1, 1) + log_prob
+
+            score, top_k_idx = score.view(batch_size, -1).topk(self.beam_size, dim=1)
+
+            x = (top_k_idx % self.vocab_size).view(-1)
+
+            beam_idx = top_k_idx / self.vocab_size  # [batch_size, beam_size]
+            top_k_pointer = (beam_idx + batch_position.unsqueeze(1)).view(-1)
+
+            h = h.index_select(1, top_k_pointer)
+
+            beam.update(score.clone(), top_k_pointer, x)  # , h)
+
+            eos_idx = x.data.eq(EOS_ID).view(batch_size, self.beam_size)
+            if eos_idx.nonzero().dim() > 0:
+                score.data.masked_fill_(eos_idx, -float('inf'))
+
+        prediction, final_score, length = beam.backtrack()
+
+        return prediction, final_score, length
