@@ -259,7 +259,8 @@ class Solver(object):
             sample_history.append(all_samples)
             ground_truth_history.append(ground_truth)
 
-        target_file_name = 'samples_{}_{}_{}_{}.txt'.format(self.config.mode, n_context, beam_size, self.epoch_i)
+        target_file_name = 'responses_{}_{}_{}_{}_{}.txt'.format(self.config.mode, n_context, n_sample_step,
+                                                                 beam_size, self.epoch_i)
         print("Writing candidates into file {}".format(target_file_name))
         conv_idx = 0
         with codecs.open(os.path.join(self.config.save_path, target_file_name), 'w', "utf-8") as output_f:

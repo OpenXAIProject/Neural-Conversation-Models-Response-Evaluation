@@ -17,7 +17,7 @@ def get_HRED(config, vocab):
 
 
 def main():
-    config = get_config()
+    config = get_config(mode='test')
 
     vocab = Vocab()
     vocab.load(config.word2id_path, config.id2word_path)
