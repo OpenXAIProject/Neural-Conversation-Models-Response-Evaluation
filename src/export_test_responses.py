@@ -4,9 +4,9 @@ from models import Solver
 
 
 def get_data_loader(config, vocab):
-    return get_loader(sentences=load_pickle(config.sentences_path),
-                      conversation_length=load_pickle(config.conversation_length_path),
-                      sentence_length=load_pickle(config.sentence_length_path),
+    return get_loader(convs=load_pickle(config.convs_path),
+                      convs_length=load_pickle(config.conversations_length_path),
+                      utterances_length=load_pickle(config.utterances_length_path),
                       vocab=vocab, batch_size=config.batch_size, shuffle=False)
 
 
