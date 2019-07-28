@@ -13,7 +13,7 @@ from .solver import Solver
 
 class SolverHRED(Solver):
     def __init__(self, config, train_data_loader, eval_data_loader, vocab, is_train=True, model=None):
-        super(Solver, self).__init__(config, train_data_loader, eval_data_loader, vocab, is_train=True, model=None)
+        super(SolverHRED, self).__init__(config, train_data_loader, eval_data_loader, vocab, is_train, model)
 
     def train(self):
         epoch_loss_history = list()
