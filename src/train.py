@@ -2,7 +2,7 @@ from utils import get_loader
 from config import get_config
 from utils import Vocab
 import os
-from models import Solver
+import solvers
 from utils import load_pickle
 
 
@@ -30,7 +30,8 @@ if __name__ == '__main__':
                                   vocab=vocab, shuffle=False,
                                   batch_size=val_config.eval_batch_size)
 
-    solver = Solver(config, train_data_loader, eval_data_loader, vocab=vocab, is_train=True)
+    model_solver = getattr(solvers, "Solver{}".format(config.model))
+    solver = model_solver(config, train_data_loader, eval_data_loader, vocab=vocab, is_train=True)
 
     solver.build()
     solver.train()

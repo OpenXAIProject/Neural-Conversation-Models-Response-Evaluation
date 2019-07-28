@@ -95,8 +95,7 @@ def get_config(parse=True, **optional_kwargs):
     parser.add_argument('--temperature', type=float, default=1.0)
     parser.add_argument('--beam_size', type=int, default=1)
 
-    parser.add_argument('--model', type=str, default='VHCR',
-                        help='one of {HRED, VHRED, VHCR}')
+    parser.add_argument('--model', type=str, default='HRED')
     parser.add_argument('--rnn', type=str, default='gru')
     parser.add_argument('--rnncell', type=str, default='gru')
     parser.add_argument('--num_layers', type=int, default=1)
