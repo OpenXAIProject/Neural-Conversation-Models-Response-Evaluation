@@ -1,4 +1,4 @@
-from data_loader import get_loader
+from utils import get_loader
 from config import get_config
 from utils import Vocab
 import os
