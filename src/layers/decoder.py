@@ -180,7 +180,7 @@ class DecoderSARNN(BaseRNNDecoder):
         last_h = hy
         out = self.out(last_h)
 
-        return out, last_h
+        return out, (hy, cy)
 
     def forward(self, word_inputs, user_inputs, init_h=None, encoder_outputs=None, input_valid_length=None, decode=False):
         batch_size = self.batch_size(word_inputs, init_h)
