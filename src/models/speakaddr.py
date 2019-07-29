@@ -54,12 +54,16 @@ class SpeakAddr(nn.Module):
     def generate(self, context, conv_users, utterances_length, n_context=1):
         samples = []
         all_samples = list()
+        num_utterances = context.size(0)
 
-        _, encoder_hidden = self.encoder(context, utterances_length)
-
+        _, encoder_hidden = self.encoder(context[:, 0, :], utterances_length[:, 0])
         encoder_hidden_h, encoder_hidden_c = encoder_hidden
+
+        encoder_hidden_h = encoder_hidden_h.transpose(1, 0).contiguous().view(num_utterances, -1)
         decoder_init_h = self.context2decoder_h(encoder_hidden_h)
         decoder_init_h = decoder_init_h.view(-1, self.decoder.hidden_size)
+
+        encoder_hidden_c = encoder_hidden_c.transpose(1, 0).contiguous().view(num_utterances, -1)
         decoder_init_c = self.context2decoder_c(encoder_hidden_c)
         decoder_init_c = decoder_init_c.view(-1, self.decoder.hidden_size)
 
