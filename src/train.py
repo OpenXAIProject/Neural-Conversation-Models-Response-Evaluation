@@ -24,7 +24,8 @@ if __name__ == '__main__':
         eval_users = load_pickle(val_config.convs_users_path)
     else:
         train_users = None
-
+        eval_users = None
+        
     train_data_loader = get_loader(convs=load_pickle(config.convs_path),
                                    convs_length=load_pickle(config.conversations_length_path),
                                    utterances_length=load_pickle(config.utterances_length_path),

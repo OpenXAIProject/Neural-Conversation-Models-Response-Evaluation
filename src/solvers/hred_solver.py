@@ -51,7 +51,7 @@ class SolverHRED(Solver):
                 self.optimizer.zero_grad()
 
                 utterances_logits = self.model(input_utterances, input_utterance_length,
-                                             input_conversation_length, target_utterances, decode=False)
+                                               input_conversation_length, target_utterances, decode=False)
 
                 batch_loss, n_words = masked_cross_entropy(utterances_logits, target_utterances, target_utterance_length)
 
