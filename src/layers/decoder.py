@@ -216,9 +216,11 @@ class DecoderSARNN(BaseRNNDecoder):
         x = self.init_token(batch_size * self.beam_size)
 
         hx, cx = init_h
-        hx = hx.repeat(1, self.beam_size, 1)
-        cx = cx.repeat(1, self.beam_size, 1)
+        hx = hx.repeat(self.beam_size, 1)
+        cx = cx.repeat(self.beam_size, 1)
         h = (hx, cx)
+        user_emb_0 = user_embedded[:, 0, :].repeat(self.beam_size, 1)
+        user_emb_1 = user_embedded[:, 1, :].repeat(self.beam_size, 1)
 
         batch_position = to_var(torch.arange(0, batch_size).long() * self.beam_size)
 
@@ -229,7 +231,7 @@ class DecoderSARNN(BaseRNNDecoder):
         beam = Beam(batch_size, self.hidden_size, self.vocab_size, self.beam_size, self.max_unroll, batch_position)
 
         for i in range(self.max_unroll):
-            out, h = self.forward_step(x, user_embedded[:, 0, :], user_embedded[:, 1, :], h,
+            out, h = self.forward_step(x, user_emb_0, user_emb_1, h,
                                        encoder_outputs=encoder_outputs, input_valid_length=input_valid_length)
             log_prob = F.log_softmax(out, dim=1)
 
@@ -242,7 +244,7 @@ class DecoderSARNN(BaseRNNDecoder):
             beam_idx = top_k_idx / self.vocab_size
             top_k_pointer = (beam_idx + batch_position.unsqueeze(1)).view(-1)
 
-            h = (h[0].index_select(1, top_k_pointer), h[1].index_select(1, top_k_pointer))
+            h = (h[0].index_select(0, top_k_pointer), h[1].index_select(0, top_k_pointer))
             # h = h.index_select(1, top_k_pointer)
 
             beam.update(score.clone(), top_k_pointer, x)
