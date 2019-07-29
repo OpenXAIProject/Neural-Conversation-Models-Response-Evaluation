@@ -47,7 +47,6 @@ class SpeakAddr(nn.Module):
         if not decode:
             decoder_outputs = self.decoder(target_utterances, conv_users, init_h=decoder_init, decode=decode)
             return decoder_outputs
-
         else:
             prediction, final_score, length = self.decoder.beam_decode(init_h=decoder_init, user_inputs=conv_users)
 

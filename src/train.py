@@ -21,6 +21,7 @@ if __name__ == '__main__':
         train_users = load_pickle(config.convs_users_path)
         config.user_size = max([x for xx in train_users for x in xx]) + 1
         print(f'User size: {config.user_size}')
+        eval_users = load_pickle(val_config.convs_users_path)
     else:
         train_users = None
 
@@ -33,7 +34,7 @@ if __name__ == '__main__':
     eval_data_loader = get_loader(convs=load_pickle(val_config.convs_path),
                                   convs_length=load_pickle(val_config.conversations_length_path),
                                   utterances_length=load_pickle(val_config.utterances_length_path),
-                                  vocab=vocab, shuffle=False, convs_users=train_users,
+                                  vocab=vocab, shuffle=False, convs_users=eval_users,
                                   batch_size=val_config.eval_batch_size)
 
     model_solver = getattr(solvers, "Solver{}".format(config.model))
