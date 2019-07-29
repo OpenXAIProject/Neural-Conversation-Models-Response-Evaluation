@@ -51,7 +51,7 @@ class SpeakAddr(nn.Module):
 
             return prediction
 
-    def generate(self, context, conv_users, utterances_length):
+    def generate(self, context, conv_users, utterances_length, n_context=1):
         samples = []
         all_samples = list()
 
