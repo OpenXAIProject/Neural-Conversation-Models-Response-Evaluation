@@ -210,7 +210,7 @@ class DecoderSARNN(BaseRNNDecoder):
             return torch.stack(x_list, dim=1)
 
     def beam_decode(self, init_h=None, user_inputs=None, encoder_outputs=None, input_valid_length=None, decode=False):
-        batch_size = self.batch_size(h=init_h)
+        batch_size = self.batch_size(user_inputs, h=init_h)
         user_embedded = self.user_embedding(user_inputs)
 
         x = self.init_token(batch_size * self.beam_size)
@@ -236,12 +236,12 @@ class DecoderSARNN(BaseRNNDecoder):
 
             x = (top_k_idx % self.vocab_size).view(-1)
 
-            beam_idx = top_k_idx / self.vocab_size  # [batch_size, beam_size]
+            beam_idx = top_k_idx / self.vocab_size
             top_k_pointer = (beam_idx + batch_position.unsqueeze(1)).view(-1)
 
             h = h.index_select(1, top_k_pointer)
 
-            beam.update(score.clone(), top_k_pointer, x)  # , h)
+            beam.update(score.clone(), top_k_pointer, x)
 
             eos_idx = x.data.eq(EOS_ID).view(batch_size, self.beam_size)
             if eos_idx.nonzero().dim() > 0:

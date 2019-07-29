@@ -40,9 +40,7 @@ class Beam(object):
 
         for t in reversed(range(self.max_unroll)):
             token_id = self.token_ids[t].index_select(0, back_pointer)
-
             back_pointer = self.back_pointers[t].index_select(0, back_pointer)
-
             eos_indices = self.token_ids[t].data.eq(EOS_ID).nonzero()
 
             if eos_indices.dim() > 0:

@@ -131,7 +131,7 @@ class SolverSpeakAddr(Solver):
                                                torch.LongTensor(target_users).unsqueeze(1)), dim=1))
 
             utterances_logits = self.model(input_utterances, conv_users, input_utterance_length,
-                                         input_conversation_length, target_utterances)
+                                           input_conversation_length, target_utterances)
 
             batch_loss, n_words = masked_cross_entropy(utterances_logits, target_utterances, target_utterance_length)
 
