@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import layers
-from utils import to_var, pad
 
 
 class SpeakAddr(nn.Module):
@@ -52,12 +51,11 @@ class SpeakAddr(nn.Module):
 
             return prediction
 
-    def generate(self, context, conv_users, utterances_length, n_context):
+    def generate(self, context, conv_users, utterances_length):
         samples = []
         all_samples = list()
 
-        for i in range(n_context):
-            _, encoder_hidden = self.encoder(context[:, i, :], utterances_length[:, i])
+        _, encoder_hidden = self.encoder(context, utterances_length)
 
         encoder_hidden_h, encoder_hidden_c = encoder_hidden
         decoder_init_h = self.context2decoder_h(encoder_hidden_h)
