@@ -215,7 +215,10 @@ class DecoderSARNN(BaseRNNDecoder):
 
         x = self.init_token(batch_size * self.beam_size)
 
-        h = self.init_h(batch_size, hidden=init_h).repeat(1, self.beam_size, 1)
+        hx, cx = init_h
+        hx = hx.repeat(1, self.beam_size, 1)
+        cx = cx.repeat(1, self.beam_size, 1)
+        h = (hx, cx)
 
         batch_position = to_var(torch.arange(0, batch_size).long() * self.beam_size)
 
@@ -239,7 +242,8 @@ class DecoderSARNN(BaseRNNDecoder):
             beam_idx = top_k_idx / self.vocab_size
             top_k_pointer = (beam_idx + batch_position.unsqueeze(1)).view(-1)
 
-            h = h.index_select(1, top_k_pointer)
+            h = (h[0].index_select(1, top_k_pointer), h[1].index_select(1, top_k_pointer))
+            # h = h.index_select(1, top_k_pointer)
 
             beam.update(score.clone(), top_k_pointer, x)
 
