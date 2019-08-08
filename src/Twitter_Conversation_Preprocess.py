@@ -1,10 +1,13 @@
+from utils.vocab import EOS_TOKEN, PAD_TOKEN
+
+
 def pad_utters_users(conversations, max_utters_length, max_conversation_length):
     def pad_tokens(tokens):
         n_valid_tokens = len(tokens)
         if n_valid_tokens > max_utters_length - 1:
             tokens = tokens[:max_utters_length - 1]
         n_pad = max_utters_length - n_valid_tokens - 1
-        tokens = tokens + [st.EOS_TOKEN] + [st.PAD_TOKEN] * n_pad
+        tokens = tokens + [EOS_TOKEN] + [PAD_TOKEN] * n_pad
         return tokens
 
     def pad_conversation(one_conversation):
