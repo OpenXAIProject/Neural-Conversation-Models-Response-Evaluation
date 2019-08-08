@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # examples
-# bash Run_Export_Test_Samples.sh HRED 30 True False 3 1 30.pkl
-# bash Run_Export_Test_Samples.sh SpeakAddr 30 True True 3 1 30.pkl
+# bash RunExportTestSamples.sh 0 HRED 30 True False 3 1 30.pkl
+# bash RunExportTestSamples.sh 0 SpeakAddr 30 True True 3 1 30.pkl
 
 export CUDA_VISIBLE_DEVICES=$1
 

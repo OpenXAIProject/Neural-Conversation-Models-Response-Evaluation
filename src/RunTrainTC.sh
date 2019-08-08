@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # examples
-# bash Run_train_TC.sh 0 HRED 30 50 True False
-# bash Run_train_TC.sh 0 SpeakAddr 30 50 True True
+# bash RunTrainTC.sh 0 HRED 30 50 True False
+# bash RunTrainTC.sh 0 SpeakAddr 30 50 True True
 
 export CUDA_VISIBLE_DEVICES=$1
 
