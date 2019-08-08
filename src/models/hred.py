@@ -79,6 +79,7 @@ class HRED(nn.Module):
         all_samples = list()
 
         context_hidden = None
+        context_outputs = None
         for i in range(n_context):
             encoder_outputs, encoder_hidden = self.encoder(context[:, i, :], utterances_length[:, i])
 
