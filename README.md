@@ -13,6 +13,7 @@ We've tested the code in this environment
 - Speaker-Addressee model ([paper](https://www.aclweb.org/anthology/papers/P/P16/P16-1094/))
 
 ## How to run the code
+Check the 'NCM' folder.
 Please see the slides in XAI Workshop in slides folder.
 
 ## Reference
@@ -30,7 +31,7 @@ This repo provides the implementation of Speaker Sensitive Response Evaluation M
 - Pytorch 1.3
 
 ## How to run
-In 'src' folder, we make bash script file to train and evaluate SSREM.
+In 'SSREM' folder, we make bash script file to train and evaluate SSREM.
 All arguments for the bash files are passed into argparse in `configs.py`/
 
  - `Run_train.sh`: a bash script file to train SSREM
